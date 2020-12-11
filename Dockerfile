@@ -4,22 +4,24 @@ LABEL maintainer="keshav143420@gmail.com"
 
 ARG html_page_name="ide"
 
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 RUN apk add --update --no-cache build-base git python2 tmux npm curl bash zip\
  && rm -rf /var/cache/apk/*
 
-ENV NVM_VERSION v0.33.11
-ENV NODE_VERSION 10.14.2
-ENV NVM_DIR /usr/local/nvm
+ENV NVM_VERSION v0.37.2
+ENV NODE_VERSION 12.20.0
+ENV NVM_DIR ~/.nvm
 RUN mkdir $NVM_DIR
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.37.2/install.sh | bash
 
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-RUN source $NVM_DIR/nvm.sh
-RUN nvm install $NODE_VERSION
-RUN nvm alias default $NODE_VERSION
-RUN nvm use default
+RUN echo "source $NVM_DIR/nvm.sh && \
+    nvm install $NODE_VERSION && \
+    nvm alias default $NODE_VERSION && \
+    nvm use default" | bash
 
 RUN git clone https://github.com/c9/core.git /root/.c9 \
  && cd /root/.c9 \
