@@ -1,4 +1,4 @@
-FROM ubuntu:17.10
+FROM ubuntu:18.04
 
 # Use bash
 RUN rm /bin/sh && ln -sf /bin/bash /bin/sh
