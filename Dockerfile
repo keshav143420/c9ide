@@ -1,47 +1,30 @@
-FROM alpine:3.11
+FROM ubuntu:17.10
 
-LABEL maintainer="keshav143420@gmail.com"
+# Use bash
+RUN rm /bin/sh && ln -sf /bin/bash /bin/sh
 
-ARG html_page_name="ide"
+# Install Prereqs
+RUN apt-get update && \
+  apt-get install \
+  # Installation deps and tools
+  apt-transport-https ca-certificates curl software-properties-common \
+  build-essential \
+  # Dev tools
+  vim git zsh -y && \
+  # Docker
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
+  apt-get update && apt-get install docker-ce -y && \
+  # Node (C9 needs v6)
+  curl --silent --location https://deb.nodesource.com/setup_6.x | bash - && \
+  apt-get install nodejs -y
 
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+# Install C9
+RUN git clone git://github.com/c9/core.git /c9 && \
+  /c9/scripts/install-sdk.sh
 
-RUN apk add --update --no-cache build-base git python2 tmux npm curl bash zip\
- && rm -rf /var/cache/apk/*
+# Create workspace
+RUN mkdir /workspace
 
-ENV NVM_VERSION v0.37.2
-ENV NODE_VERSION 12.20.0
-ENV NVM_DIR ~/.nvm
-RUN mkdir $NVM_DIR
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.37.2/install.sh | bash
-
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
-
-RUN echo "source $NVM_DIR/nvm.sh && \
-    nvm install $NODE_VERSION && \
-    nvm alias default $NODE_VERSION && \
-    nvm use default" | bash
-
-RUN git clone https://github.com/c9/core.git /root/.c9 \
- && cd /root/.c9 \
- && mkdir -p ./node/bin ./bin ./node_modules \
- && ln -sf "`which tmux`" ./bin/tmux \
- && ln -s "`which node`" ./node/bin/node \
- && ln -s "`which npm`" ./node/bin/npm \
- && npm install pty.js \
- && echo 1 > ./installed \
- && NO_PULL=1 ./scripts/install-sdk.sh \
- && rm -rf /tmp/* \
- && bash -c "sed -i 's#/ide.html#/'$html_page_name'.html#g' ./plugins/c9.vfs.standalone/standalone.js" \
- && mkdir /workspace
-
-VOLUME /workspace
-
-WORKDIR /workspace
-
-EXPOSE 8080/tcp
-
-ENV C9USER="c9user" C9PASSWORD="c9password"
-
-ENTRYPOINT ["/bin/sh", "-c", "/usr/bin/node /root/.c9/server.js -p 8080 -w /workspace/ -l 0.0.0.0 -a $C9USER:$C9PASSWORD"]
+# Start C9
+CMD node /c9/server.js -p $C9PORT -a $C9USER:$C9PASS --listen 0.0.0.0 -w /workspace
