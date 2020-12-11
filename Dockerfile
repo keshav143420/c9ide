@@ -9,7 +9,7 @@ RUN apt-get update && \
   apt-get install \
   # Installation deps and tools
   apt-transport-https ca-certificates curl software-properties-common \
-  build-essential \
+  build-essential python2.7 sshfs zip unzip tzdata\
   # Dev tools
   vim git zsh -y && \
   # Docker
