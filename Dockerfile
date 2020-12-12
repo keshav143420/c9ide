@@ -5,7 +5,7 @@ FROM ubuntu:18.04
 RUN rm /bin/sh && ln -sf /bin/bash /bin/sh
 
 # Install Prereqs
-RUN apt-get update && \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive  \
   apt-get install \
   # Installation deps and tools
   apt-transport-https ca-certificates curl software-properties-common \
