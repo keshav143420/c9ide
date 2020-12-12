@@ -5,11 +5,15 @@ FROM ubuntu:18.04
 RUN rm /bin/sh && ln -sf /bin/bash /bin/sh
 
 # Install Prereqs
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive  \
+RUN apt-get update --fix-missing && DEBIAN_FRONTEND=noninteractive  \
   apt-get install \
   # Installation deps and tools
   apt-transport-https ca-certificates curl software-properties-common \
   build-essential python2.7 sshfs zip unzip tzdata\
+  dnsutils bash-completion xsltproc \
+  build-essential fakeroot tmux duplicity lftp htop apt-file \
+  parallel strace ltrace flex jq ack-grep gdb valgrind locate tree time \
+  zip unp cmake \
   # Dev tools
   vim git zsh -y && \
   # Node (C9 needs v6)
