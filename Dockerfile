@@ -12,10 +12,6 @@ RUN apt-get update && \
   build-essential python2.7 sshfs zip unzip tzdata\
   # Dev tools
   vim git zsh -y && \
-  # Docker
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
-  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
-  apt-get update && apt-get install docker-ce -y && \
   # Node (C9 needs v6)
   curl --silent --location https://deb.nodesource.com/setup_6.x | bash - && \
   apt-get install nodejs -y
